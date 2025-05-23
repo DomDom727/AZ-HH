@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import pickle
 import numpy as np
 import os
@@ -8,21 +9,36 @@ with open("model.pkl", "rb") as f:
     model = pickle.load(f)
 
 app = Flask(__name__)
+CORS(app)
 
-@app.route("/")
-def home():
-    return "Model API is running."
+# Define the expected field order
+FEATURE_ORDER = [
+    "BMI",
+    "Smoking",
+    "PhysicalActivity",
+    "DietQuality",
+    "SleepQuality",
+    "FamilyHistoryAsthma",
+    "HistoryOfAllergies",
+    "HayFever",
+    "GastroesophagealReflux",
+    "Wheezing",
+    "ShortnessOfBreath",
+    "ChestTightness",
+    "Coughing",
+    "ExerciseInduced"
+]
 
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
-        # Expecting a JSON payload with a key "features"
         data = request.get_json()
-        features = np.array(data["features"]).reshape(1, -1)
-        
-        # Predict using the loaded model
+
+        # Extract features in correct order
+        features = [data.get(key, 0) for key in FEATURE_ORDER]
+        features = np.array(features).reshape(1, -1)
+
         prediction = model.predict(features)
-        
         return jsonify({"prediction": prediction.tolist()})
     except Exception as e:
         return jsonify({"error": str(e)}), 400
