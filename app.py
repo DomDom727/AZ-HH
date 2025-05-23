@@ -30,6 +30,11 @@ FEATURE_ORDER = [
     "ExerciseInduced"
 ]
 
+
+@app.route("/")
+def home():
+    return "Model is running"
+
 @app.route("/predict", methods=["POST"])
 def predict():
     try:
