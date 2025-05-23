@@ -13,6 +13,7 @@ CORS(app)
 
 # Define the expected field order
 FEATURE_ORDER = [
+    "AGE"
     "BMI",
     "Smoking",
     "PhysicalActivity",
